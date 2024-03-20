@@ -38,19 +38,6 @@ const MapComponent = () => {
   const intervalRef = useRef(null);
   const sortedArray = [...sortArrayByTimestamp(dataSets)];
   const newArray = [];
-  useEffect(() => {
-    if (isResumed) {
-      // console.log('from useEffect')
-      intervalRef.current = setInterval(
-        () => polyPathHandler("useEffect"),
-        2000
-      );
-      return () => clearInterval(intervalRef.current);
-    }
-    // return ()=>{
-    //    sortedArray.length===0 && setIsResumed(false);
-    // }
-  }, [isResumed, newArray.length]);
 
   useEffect(() => {
     const lat = parseFloat(dataSets[0].lat);
@@ -58,17 +45,17 @@ const MapComponent = () => {
     lat > 0 && setSelectedAreas({ lat, lng });
   }, [dataSets]);
 
-  const polyPathHandler = (trigger) => {
+  const polyPathHandler = (trigger,sourceArray) => {
     console.log("trigger", trigger);
     console.log(
       "🚀 ~ polyPathHandler ~ sortedArray:",
-      sortedArray.length,
-      sortedArray,
+      sourceArray.length,
+      sourceArray,
       isResumed
     );
 
-    if (sortedArray.length > 0) {
-      const objectToTransfer = sortedArray.shift();
+    if (sourceArray?.length > 0) {
+      const objectToTransfer = sourceArray.shift();
 
       objectToTransfer &&
         newArray.push({ lat: objectToTransfer.lat, lng: objectToTransfer.lng });
@@ -84,26 +71,47 @@ const MapComponent = () => {
   const handlePause = () => {
     setIsResumed(false);
     // if (intervalRef.current) {
-    clearInterval(intervalRef.current);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     // }
     console.log("intervalRef.current after clear", intervalRef.current);
   };
 
   const handleResume = () => {
-    !isResumed && setIsResumed(true);
-    setPolyPath([...newArray]);
-    intervalRef.current = setInterval(
-      () => polyPath.length > 0 && polyPathHandler("resume"),
-      2000
-    );
+    setIsResumed(true);
+    console.log("polyPath", polyPath);
+    const currentPolyPath = [...polyPath]
+    // setPolyPath([...newArray]);
+    // if (!intervalRef.current) {
+      intervalRef.current = setInterval(
+        () => polyPath.length > 0 && polyPathHandler("resume",currentPolyPath),
+        2000
+      );
+    // }
   };
   const handleSimulate = () => {
-    !isResumed && setIsResumed(true);
+    setIsResumed(true);
     intervalRef.current = setInterval(
-      () => polyPath.length > 0 && polyPathHandler("simulate"),
+      () => polyPath.length > 0 && polyPathHandler("simulate", sortedArray),
       2000
     );
   };
+
+  useEffect(() => {
+    if (isResumed) {
+      // console.log('from useEffect')
+      intervalRef.current = setInterval(
+        () => polyPathHandler("useEffect",sortedArray),
+        2000
+      );
+      return () => clearInterval(intervalRef.current);
+    }
+    // return ()=>{
+    //    sortedArray.length===0 && setIsResumed(false);
+    // }
+  }, [isResumed]);
 
   return (
     <div
@@ -115,7 +123,7 @@ const MapComponent = () => {
         marginTop: "20px",
       }}
     >
-      <div style={{margin:'20px 0'}}>
+      <div style={{ margin: "20px 0" }}>
         <button onClick={handleSimulate}>simulate</button>
         <button onClick={handlePause}>pause</button>
         <button onClick={handleResume}>resume</button>
