@@ -4,17 +4,9 @@ import { MapContext } from "@/app/MapContext";
 import React, { useContext, useState } from "react";
 import csvToJSON from "@/app/helpers/csvToJsonConverter";
 
-
 const DroneSimulator = () => {
   const { dataSets, setDataSets } = useContext(MapContext);
   const [selectedFile, setSelectedFile] = useState(null);
-
-
-
-  const onSubmit = (event) => {
-    event.preventDefault();
-    console.log("form submitted");
-  };
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -30,8 +22,8 @@ const DroneSimulator = () => {
       const csvData = event.target.result;
       console.log(csvData.toString());
       const convertedCsv = csvToJSON(csvData.toString());
-      console.log("🚀 ~ handleUpload ~ convertedCsv:", convertedCsv)
-      setDataSets(convertedCsv)
+      console.log("🚀 ~ handleUpload ~ convertedCsv:", convertedCsv);
+      setDataSets(convertedCsv);
     };
     // console.log(parsedData)
     reader.readAsText(selectedFile);
@@ -72,47 +64,52 @@ const DroneSimulator = () => {
   };
 
   return (
-    <div>
-          <form>
-            <label htmlFor="csvFile">Select CSV file:</label>
-            <input
-              type="file"
-              id="csvFile"
-              name="csvFile"
-              onChange={handleFileChange}
-              accept=".csv"
-            />
+    <div style={{ marginTop: "40px" }}>
+      <form>
+        <div>
+          <label htmlFor="csvFile">Select CSV file: </label>
+          <input
+            style={{ border: "1px solid", marginRight: "10px" }}
+            type="file"
+            id="csvFile"
+            name="csvFile"
+            onChange={handleFileChange}
+            accept=".csv"
+          />
+          <button onClick={(e) => handleUpload(e)}>upload file</button>
+        </div>
 
-            {dataSets.map((data, index) => (
-              <div key={index}>
-                <input
-                  placeholder="lat"
-                  value={data.lat}
-                  onChange={(event) => handelOnChange(event, index)}
-                  name="lat"
-                  type="number"
-                />
-                <input
-                  placeholder="lng"
-                  value={data.lng}
-                  onChange={(event) => handelOnChange(event, index)}
-                  name="lng"
-                  type="number"
-                />
-                <input
-                  placeholder="timestamp"
-                  value={data.timestamp}
-                  onChange={(event) => handelOnChange(event, index)}
-                  name="timestamp"
-                  type="datetime-local"
-                />
+        <div style={{ paddingTop: "20px" }}>
+          {dataSets.map((data, index) => (
+            <div key={index}>
+              <input
+                placeholder="lat"
+                value={data.lat}
+                onChange={(event) => handelOnChange(event, index)}
+                name="lat"
+                type="number"
+              />
+              <input
+                placeholder="lng"
+                value={data.lng}
+                onChange={(event) => handelOnChange(event, index)}
+                name="lng"
+                type="number"
+              />
+              <input
+                placeholder="timestamp"
+                value={data.timestamp}
+                onChange={(event) => handelOnChange(event, index)}
+                name="timestamp"
+                type="datetime-local"
+              />
 
-                {/* <button>delete</button> */}
-              </div>
-            ))}
-            <button onClick={(e) => handleAddMore(e)}>add more</button>
-            <button onClick={(e) => handleUpload(e)}>upload file</button>
-          </form>
+              {/* <button>delete</button> */}
+            </div>
+          ))}
+        </div>
+        <button onClick={(e) => handleAddMore(e)}>add more</button>
+      </form>
     </div>
   );
 };

@@ -2,6 +2,8 @@ const csvToJSON = (csvString) => {
   // Split the CSV string into lines
   const lines = csvString.split("\n");
   console.log("🚀 ~ csvToJSON ~ lines:", lines)
+  lines.pop()
+  console.log("🚀 ~ csvToJSON ~ lines:", lines)
 
   // Get the header row
   const header = lines[0].split(",");
@@ -32,7 +34,7 @@ const csvToJSON = (csvString) => {
     }
     return object;
   });
-
+  console.log(data)
   return data;
 };
 export default csvToJSON;

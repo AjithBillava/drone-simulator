@@ -105,24 +105,33 @@ const MapComponent = () => {
     );
   };
 
-  
-
   return (
-    <div style={{ marginTop: "50px" }}>
-      <button onClick={handleSimulate}>simulate</button>
-      <button onClick={handlePause}>pause</button>
-      <button onClick={handleResume}>resume</button>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: "20px",
+      }}
+    >
+      <div style={{margin:'20px 0'}}>
+        <button onClick={handleSimulate}>simulate</button>
+        <button onClick={handlePause}>pause</button>
+        <button onClick={handleResume}>resume</button>
+      </div>
 
       {isLoaded && (
         <GoogleMap
           mapContainerStyle={{
-            height: "800px",
+            height: "700px",
+            width: "700px",
           }}
           center={selectedArea}
           zoom={13}
           onLoad={onMapLoad}
         >
-          {dataSets.map((data,index) => (
+          {dataSets.map((data, index) => (
             <MarkerF
               key={index}
               position={{
