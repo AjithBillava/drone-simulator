@@ -82,7 +82,7 @@ const MapComponent = () => {
   };
 
   const handlePause = () => {
-    isResumed && setIsResumed(false);
+    setIsResumed(false);
     // if (intervalRef.current) {
     clearInterval(intervalRef.current);
     // }
@@ -91,8 +91,16 @@ const MapComponent = () => {
 
   const handleResume = () => {
     !isResumed && setIsResumed(true);
+    setPolyPath([...newArray]);
     intervalRef.current = setInterval(
       () => polyPath.length > 0 && polyPathHandler("resume"),
+      2000
+    );
+  };
+  const handleSimulate = () => {
+    !isResumed && setIsResumed(true);
+    intervalRef.current = setInterval(
+      () => polyPath.length > 0 && polyPathHandler("simulate"),
       2000
     );
   };
@@ -101,7 +109,7 @@ const MapComponent = () => {
 
   return (
     <div style={{ marginTop: "50px" }}>
-      <button onClick={handleResume}>simulate</button>
+      <button onClick={handleSimulate}>simulate</button>
       <button onClick={handlePause}>pause</button>
       <button onClick={handleResume}>resume</button>
 
@@ -114,9 +122,9 @@ const MapComponent = () => {
           zoom={13}
           onLoad={onMapLoad}
         >
-          {dataSets.map((data) => (
+          {dataSets.map((data,index) => (
             <MarkerF
-              key={data.timestamp}
+              key={index}
               position={{
                 lat: parseFloat(data.lat),
                 lng: parseFloat(data.lng),

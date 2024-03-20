@@ -2,15 +2,39 @@
 
 import { MapContext } from "@/app/MapContext";
 import React, { useContext, useState } from "react";
-import { Form } from "react-final-form";
+import csvToJSON from "@/app/helpers/csvToJsonConverter";
+
 
 const DroneSimulator = () => {
   const { dataSets, setDataSets } = useContext(MapContext);
-  console.log("🚀 ~ DroneSimulator ~ dataSets:", dataSets);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
 
   const onSubmit = (event) => {
     event.preventDefault();
     console.log("form submitted");
+  };
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+    console.log("file changed", event.target.files[0]);
+  };
+
+  const handleUpload = (e) => {
+    e.preventDefault();
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const csvData = event.target.result;
+      console.log(csvData.toString());
+      const convertedCsv = csvToJSON(csvData.toString());
+      console.log("🚀 ~ handleUpload ~ convertedCsv:", convertedCsv)
+      setDataSets(convertedCsv)
+    };
+    // console.log(parsedData)
+    reader.readAsText(selectedFile);
   };
 
   const handelOnChange = (event: any, index: number) => {
@@ -29,7 +53,7 @@ const DroneSimulator = () => {
     } else {
       updatedDataSets[index][name] = parseFloat(value);
     }
-
+    console.log("updatedDataSets", updatedDataSets);
     setDataSets(updatedDataSets);
   };
 
@@ -49,12 +73,18 @@ const DroneSimulator = () => {
 
   return (
     <div>
-      <Form
-        onSubmit={(event) => onSubmit(event)}
-        render={({ handleSubmit }) => (
           <form>
+            <label htmlFor="csvFile">Select CSV file:</label>
+            <input
+              type="file"
+              id="csvFile"
+              name="csvFile"
+              onChange={handleFileChange}
+              accept=".csv"
+            />
+
             {dataSets.map((data, index) => (
-              <div key={data.timestamp}>
+              <div key={index}>
                 <input
                   placeholder="lat"
                   value={data.lat}
@@ -80,11 +110,9 @@ const DroneSimulator = () => {
                 {/* <button>delete</button> */}
               </div>
             ))}
-                <button onClick={(e) => handleAddMore(e)}>add more</button>
-
+            <button onClick={(e) => handleAddMore(e)}>add more</button>
+            <button onClick={(e) => handleUpload(e)}>upload file</button>
           </form>
-        )}
-      />
     </div>
   );
 };
